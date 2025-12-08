@@ -77,7 +77,7 @@ def update_user_details():
     return jsonify({"message": "this is update user details api"})
 
 
-@app.route('/upadteStudentDetailS', methods=['PUT'])
+@app.route('/updateStudentDetails', methods=['PUT'])
 def update_data():
     id = request.json.get('id')
     name = request.json.get('name')
