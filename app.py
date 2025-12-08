@@ -2,24 +2,15 @@ import jwt
 from flask import Flask, jsonify, request
 from datetime import datetime, timedelta
 import mysql.connector
-import os
-# import pymysql
-
-# import jwt
 
 app = Flask(__name__)
 
-# Read database values from Railway environment
-DB_HOST = os.environ.get("DB_HOST")
-DB_USER = os.environ.get("DB_USER")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_NAME = os.environ.get("DB_NAME")
 
 conn = mysql.connector.connect(
-    host=DB_HOST,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    database=DB_NAME
+    host="mysql.railway.internal",
+    user="root",
+    password="vpjsTiqqxfFfgNcdMptAHZjPcVpogJDT",
+    database="railway"
 )
 print("Connected successfully to MySQL on Railway!")
 
