@@ -7,7 +7,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-
 conn = mysql.connector.connect(
     host="mysql.railway.internal",
     user="root",
