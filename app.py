@@ -59,7 +59,7 @@ def add_users():
     server_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     createdDate = server_datetime
-    updatedDate = server_datetime
+    # updatedDate = server_datetime
 
     # 🔥 Convert list of objects → JSON string
     inprogressOrder = json.dumps(data.get('inprogressOrder', []))
@@ -70,13 +70,13 @@ def add_users():
     sql_query = """
     INSERT INTO users 
     (name, flatNo, phone, role, buildingName, landmark, latitude, longitude,
-     location, fcmtoken, createdDate, updatedDate, inprogressOrder, completedOrder)
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+     location, fcmtoken, createdDate, inprogressOrder, completedOrder)
+    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
 
     cursor.execute(sql_query, (
         name, flatNo, phone, role, buildingName, landmark, latitude, longitude,
-        location, fcmtoken, createdDate, updatedDate,
+        location, fcmtoken, createdDate,
         inprogressOrder, completedOrder
     ))
 
