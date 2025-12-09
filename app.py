@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from datetime import datetime, timedelta
 import mysql.connector
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -53,14 +54,15 @@ def add_users():
     location = data.get('location')
     fcmtoken = data.get('fcmtoken')
     createdDate = data.get('createdDate')
-    updatedDate = data.get('updatedDate')
+    updatedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    userStatus = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     inprogressOrder = json.dumps(data.get('inprogressOrder', []))
-    completedOrder = json.dumps(data.get('completedOrder', []))
+    completedOrder = json.dumps(data.get('completedOrder', [])),
     cursor = conn.cursor()
     sql_query = "INSERT INTO users (name,flatNo,phone,role,buildingName,landmark,latitude,longitude,location," \
-                "fcmtoken,createdDate,updatedDate,inprogressOrder,completedOrder) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s," \
+                "fcmtoken,createdDate,updatedDate,userStatus,inprogressOrder,completedOrder) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," \
                 "%s,%s,%s,%s,%s) "
-    cursor.execute(sql_query, (name, flatNo, phone, role, buildingName, landmark, latitude, longitude, location, fcmtoken, createdDate, updatedDate, inprogressOrder, completedOrder))
+    cursor.execute(sql_query, (name, flatNo, phone, role, buildingName, landmark, latitude, longitude, location, fcmtoken, createdDate, updatedDate, userStatus, inprogressOrder, completedOrder))
     conn.commit()
     return jsonify({"message": "Data inserted successfully!!"}), 201
 
