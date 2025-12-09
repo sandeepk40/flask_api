@@ -15,6 +15,7 @@ conn = mysql.connector.connect(
 )
 print("Connected successfully to MySQL on Railway!")
 
+
 # conn = mysql.connector.connect(
 #     user='root',
 #     host='localhost',
@@ -42,6 +43,7 @@ def get_table():
 @app.route('/addUsers', methods=['POST'])
 def add_users():
     data = request.get_json()
+
     name = data.get('name')
     flatNo = data.get('flatNo')
     phone = data.get('phone')
@@ -52,18 +54,62 @@ def add_users():
     longitude = data.get('longitude')
     location = data.get('location')
     fcmtoken = data.get('fcmtoken')
-    createdDate = data.get('createdDate')
-    updatedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    userStatus = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 🔥 Server DateTime
+    server_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    createdDate = server_datetime
+    updatedDate = server_datetime
+
+    # 🔥 Convert list of objects → JSON string
     inprogressOrder = json.dumps(data.get('inprogressOrder', []))
-    completedOrder = json.dumps(data.get('completedOrder', [])),
+    completedOrder = json.dumps(data.get('completedOrder', []))
+
     cursor = conn.cursor()
-    sql_query = "INSERT INTO users (name,flatNo,phone,role,buildingName,landmark,latitude,longitude,location," \
-                "fcmtoken,createdDate,updatedDate,userStatus,inprogressOrder,completedOrder) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," \
-                "%s,%s,%s,%s,%s) "
-    cursor.execute(sql_query, (name, flatNo, phone, role, buildingName, landmark, latitude, longitude, location, fcmtoken, createdDate, updatedDate, userStatus, inprogressOrder, completedOrder))
+
+    sql_query = """
+    INSERT INTO users 
+    (name, flatNo, phone, role, buildingName, landmark, latitude, longitude,
+     location, fcmtoken, createdDate, updatedDate, inprogressOrder, completedOrder)
+    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """
+
+    cursor.execute(sql_query, (
+        name, flatNo, phone, role, buildingName, landmark, latitude, longitude,
+        location, fcmtoken, createdDate, updatedDate,
+        inprogressOrder, completedOrder
+    ))
+
     conn.commit()
+
     return jsonify({"message": "Data inserted successfully!!"}), 201
+
+
+# @app.route('/addUsers', methods=['POST'])
+# def add_users():
+#     data = request.get_json()
+#     name = data.get('name')
+#     flatNo = data.get('flatNo')
+#     phone = data.get('phone')
+#     role = data.get('role')
+#     buildingName = data.get('buildingName')
+#     landmark = data.get('landmark')
+#     latitude = data.get('latitude')
+#     longitude = data.get('longitude')
+#     location = data.get('location')
+#     fcmtoken = data.get('fcmtoken')
+#     createdDate = data.get('createdDate')
+#     updatedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#     userStatus = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#     inprogressOrder = json.dumps(data.get('inprogressOrder', []))
+#     completedOrder = json.dumps(data.get('completedOrder', [])),
+#     cursor = conn.cursor()
+#     sql_query = "INSERT INTO users (name,flatNo,phone,role,buildingName,landmark,latitude,longitude,location," \
+#                 "fcmtoken,createdDate,updatedDate,userStatus,inprogressOrder,completedOrder) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," \
+#                 "%s,%s,%s,%s,%s) "
+#     cursor.execute(sql_query, (name, flatNo, phone, role, buildingName, landmark, latitude, longitude, location, fcmtoken, createdDate, updatedDate, userStatus, inprogressOrder, completedOrder))
+#     conn.commit()
+#     return jsonify({"message": "Data inserted successfully!!"}), 201
 
 
 @app.route('/fetchAllUsers', methods=['GET'])
