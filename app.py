@@ -85,6 +85,45 @@ def add_users():
     return jsonify({"message": "Data inserted successfully!!"}), 201
 
 
+@app.route('/updateOrderStatus', methods=['POST'])
+def update_order_status():
+    data = request.get_json()
+
+    userId = data.get('userId')
+    orderType = data.get('orderType')  # "inprogressOrder" or "completedOrder"
+    orderId = data.get('orderId')
+    newStatus = data.get('newStatus')
+
+    cursor = conn.cursor(dictionary=True)
+
+    # 1️⃣ Fetch existing JSON array
+    cursor.execute(f"SELECT {orderType} FROM users WHERE id = %s", (userId,))
+    row = cursor.fetchone()
+
+    if not row:
+        return jsonify({"error": "User not found"}), 404
+
+    # 2️⃣ Convert JSON string → Python list
+    order_list = json.loads(row[orderType])
+
+    # 3️⃣ Update status for matching orderId
+    for order in order_list:
+        if order["id"] == orderId:
+            order["status"] = newStatus
+
+    # 4️⃣ Convert list → JSON string
+    updated_orders_json = json.dumps(order_list)
+
+    # 5️⃣ Update DB
+    cursor.execute(
+        f"UPDATE users SET {orderType} = %s WHERE id = %s",
+        (updated_orders_json, userId)
+    )
+    conn.commit()
+
+    return jsonify({"message": "Order status updated successfully!"})
+
+
 # @app.route('/addUsers', methods=['POST'])
 # def add_users():
 #     data = request.get_json()
