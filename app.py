@@ -124,31 +124,30 @@ def update_order_status():
     return jsonify({"message": "Order status updated successfully!"})
 
 
-# @app.route('/addUsers', methods=['POST'])
-# def add_users():
-#     data = request.get_json()
-#     name = data.get('name')
-#     flatNo = data.get('flatNo')
-#     phone = data.get('phone')
-#     role = data.get('role')
-#     buildingName = data.get('buildingName')
-#     landmark = data.get('landmark')
-#     latitude = data.get('latitude')
-#     longitude = data.get('longitude')
-#     location = data.get('location')
-#     fcmtoken = data.get('fcmtoken')
-#     createdDate = data.get('createdDate')
-#     updatedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#     userStatus = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#     inprogressOrder = json.dumps(data.get('inprogressOrder', []))
-#     completedOrder = json.dumps(data.get('completedOrder', [])),
-#     cursor = conn.cursor()
-#     sql_query = "INSERT INTO users (name,flatNo,phone,role,buildingName,landmark,latitude,longitude,location," \
-#                 "fcmtoken,createdDate,updatedDate,userStatus,inprogressOrder,completedOrder) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," \
-#                 "%s,%s,%s,%s,%s) "
-#     cursor.execute(sql_query, (name, flatNo, phone, role, buildingName, landmark, latitude, longitude, location, fcmtoken, createdDate, updatedDate, userStatus, inprogressOrder, completedOrder))
-#     conn.commit()
-#     return jsonify({"message": "Data inserted successfully!!"}), 201
+@app.route('/updateFcmToken/<int:userId>', methods=['PUT'])
+def update_fcm_token(userId):
+    data = request.get_json()
+
+    fcmtoken = data.get('fcmtoken')
+
+    if not fcmtoken:
+        return jsonify({"error": "fcmtoken is required"}), 400
+
+    cursor = conn.cursor()
+
+    # 🔥 Update updatedDate with server time
+    server_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    sql = """
+        UPDATE users 
+        SET fcmtoken = %s, updatedDate = %s
+        WHERE id = %s
+    """
+
+    cursor.execute(sql, (fcmtoken, server_datetime, userId))
+    conn.commit()
+
+    return jsonify({"message": "FCM token updated successfully!"}), 200
 
 
 @app.route('/fetchAllUsers', methods=['GET'])
